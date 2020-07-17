@@ -6,7 +6,7 @@ import CameraStreamContainer from './CameraStreamContainer';
 
 const VideoView = props => {
 
-    console.log(this.props.currentCamView)
+    console.log(props.currentCamView)
     const forcedSingleView = <View>
                                 <CameraStreamContainer enabled={ props.cameras.filter( c => c.bID === props.singleCamSelected)[0] } camNum={ props.singleCamSelected } />
                              </View>

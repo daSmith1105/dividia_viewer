@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { loginUser, getServer } from './../actions';
 import { View, Text, Image, Dimensions } from 'react-native'; 
 import logo from '../images/logo_transparent.png';
-import VideoView from './VideoView';
 import config from '../../app.json';
 import ConfButtonsView from './ConfButtonsView';
 import UtilityBar from './UtilityBar';
 import RNPickerSelect from 'react-native-picker-select';
 import { Ionicons } from '@expo/vector-icons';
+import VideoView from './VideoView'
 
 const width = Dimensions.get('window').width;
 
