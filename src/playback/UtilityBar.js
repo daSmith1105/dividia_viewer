@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { logoutUser, screenChange } from '../actions';
 import { View, TouchableOpacity, Text } from 'react-native'; 
 import { Ionicons, Foundation, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 class UtilityBar extends React.Component {
@@ -14,42 +15,42 @@ class UtilityBar extends React.Component {
         return (
             <View style={styles.confButtonsViewContainerStyle}>
                 <TouchableOpacity style={styles.confButtonStyle}
-                                  onPress={ () => alert('playback button pressed')}>
+                                  onPress={ () => this.props.screenChange('live')}>
                     <Foundation name="play-video" size={30} color="white" />
                     <Text style={styles.confButtonTextStyle}>live</Text>
                     <Text style={styles.confButtonTextStyle}>view</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.confButtonStyle}
+                {/* <TouchableOpacity style={styles.confButtonStyle}
                                   onPress={ () => alert('info button pressed')}>
                      <MaterialCommunityIcons name="cloud-download" size={30} color="white" />
                      <Text style={styles.confButtonTextStyle}>save</Text>
                      <Text style={styles.confButtonTextStyle}>video</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
-                <TouchableOpacity style={styles.confButtonStyle}
+                {/* <TouchableOpacity style={styles.confButtonStyle}
                                   onPress={ () => alert('audio button pressed')}>
                     <Ionicons name="ios-camera" size={30} color="white" />
                     <Text style={styles.confButtonTextStyle}>take</Text>
                     <Text style={styles.confButtonTextStyle}>photo</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
-                <TouchableOpacity style={styles.confButtonStyle}
+                {/* <TouchableOpacity style={styles.confButtonStyle}
                                   onPress={ () => alert('dewarp button pressed')}>
                     <Feather name="aperture" size={30} color="white" />
                     <Text style={styles.confButtonTextStyle}>fish</Text>
                     <Text style={styles.confButtonTextStyle}>eye</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
-                <TouchableOpacity style={styles.confButtonStyle}
+                {/* <TouchableOpacity style={styles.confButtonStyle}
                                   onPress={ () => alert('photo button pressed')}>
                     <Foundation name="info" size={30} color="white" />
                     <Text style={styles.confButtonTextStyle}>toggle</Text>
                     <Text style={styles.confButtonTextStyle}>info</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <TouchableOpacity style={styles.confButtonStyle}
-                                  onPress={ () => alert('logout button pressed')}>
+                                  onPress={ () => this.props.logoutUser(this.props.sSess, 'http://205.201.69.172:7000/JSON/')}>
                     <MaterialCommunityIcons name="logout-variant" size={31} color="white" />
                     <Text style={styles.confButtonTextStyle}>logout</Text>
                     <Text style={styles.confButtonTextStyle}></Text>
@@ -61,12 +62,13 @@ class UtilityBar extends React.Component {
 }
 
 const mapStateToProps = state => {
+    const { sSess } = state.auth;
     return {
-      state
+      sSess
   }
 }
 
-export default connect(mapStateToProps, {})(UtilityBar);
+export default connect(mapStateToProps, {logoutUser, screenChange})(UtilityBar);
 
 const styles = {
     confButtonsViewContainerStyle: {

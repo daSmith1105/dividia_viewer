@@ -5,7 +5,7 @@ import { setSingleView } from '../actions';
 import placeholderImage from '../images/dtplaceholder.gif';
 import moment from 'moment';
 import { NoFlickerImage } from 'react-native-no-flicker-image';
-import DoubleClick from 'react-native-double-tap';
+import DoubleTap from '../utility/DoubleTap';
 
 const width = Dimensions.get('window').width;
 let h = w / 1.3;
@@ -49,7 +49,7 @@ class CameraStreamContainer extends React.Component {
                 }
             }, 300)
         })
-       this.updateTimestamp();
+        this.updateTimestamp();
     }
 
     componentWillUnmount = () => {
@@ -57,25 +57,19 @@ class CameraStreamContainer extends React.Component {
     }
 
     updateTimestamp = () => {
-        this.setState({
-            timestamp: Date.now()
-        }, () => {
-            if(this.props.isLoggedIn) {
-                this.setState({
-                    timestamp: Date.now()
-                }, () => {
-                    this.updateHandler = setTimeout( () => { this.updateTimestamp(); this.updateHandler = 0 }, 1000 ) 
-                })
-                
-            } else {
-                clearTimeout(this.updateHandler);
-            }
-                
-        });
+        if(this.props.isLoggedIn) {
+            this.setState({
+                timestamp: this.props.ts
+            }, () => {
+                this.updateHandler = setTimeout( () => { this.updateTimestamp(); this.updateHandler = 0 }, 1000 ) 
+            })
+            
+        } else {
+            clearTimeout(this.updateHandler);
+        }
     };
     
     render() {
-
         if(this.props.fSingle === 1){
             h = width / 1.3;
             w = width;
@@ -110,29 +104,28 @@ class CameraStreamContainer extends React.Component {
                     w = width;
             }
         }
-        console.log(this.props.ts)
 
         return (
             <View style={{ height: this.props.fSingle ? width / 1.3 : h, width: this.props.fSingle ? width : w, borderWidth: 1, borderColor: "rgba(0,0,0,0.8)" }}> 
                 { this.state.enabled && !this.state.loading && this.props.enabled !== 'false' && this.props.userCameras.indexOf(parseInt(this.props.camNum)) > -1 ? 
-                    <View style={{ height: '100%', width: '100%' }}>
-                         <DoubleClick
-                                singleTap={() => {
-                                    console.log("single tap");
-                                }}
+                    <View style={{ height: '100%', width: '100%', position: 'relative' }}>
+                         <DoubleTap
+                                // singleTap={() => {
+                                //     console.log("single tap");
+                                // }}
                                 doubleTap={() => this.props.fSingle ? this.props.setSingleView() : this.props.conf !== 'conf-1' ? this.props.onDoublePress() : null }
                                 delay={200}
-                                >
+                                >     
                             <NoFlickerImage
                                 style={{width: '100%', height: '100%' }}
-                                source={{uri: `http://205.201.69.172:7000/mpe/cam${this.props.camNum}.jpg?sess=${this.props.sSess}&ts=${this.props.ts}`}}
+                                source={{uri: `http://205.201.69.172:7000/mpe/cam${this.props.camNum}.jpg?sess=${this.props.sSess}&ts=${this.state.timestamp}` }}
                                 />
                             <View style={[styles.timestampContainerStyle, {overflow: 'hidden', height: this.props.conf !== 'conf-12' && this.props.conf !== 'conf-16' && !this.props.fSingle ? 14 : 12 }] }> 
                                 <Text style={[styles.timestampTextStyle, { fontSize: this.props.conf !== 'conf-12' && this.props.conf !== 'conf-16' && !this.props.fSingle ? 10 : 8 }]}>
                                     {this.props.camNum + ' - ' + this.props.cameras.find( c => c.bID === parseInt(this.props.camNum)).sName} 
                                 </Text> 
                             </View>
-                        </DoubleClick>
+                        </DoubleTap>
                     </View>  :
                     <View style={{ height: '100%', width: '100%' }}> 
                         <NoFlickerImage
@@ -182,7 +175,7 @@ const styles = {
     },
     timestampContainerStyle: {
         position: 'absolute', 
-        bottom: 0, 
+        bottom: -1, 
         left: 0,
         width: '100%',  
         backgroundColor: 'rgba(0,0,0,0.8)', 

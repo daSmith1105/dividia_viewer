@@ -75,14 +75,14 @@ class SearchBlock extends React.Component {
                 <View style={{ width: '40%', alignItems: 'center'}}>
                     <Text style={{ fontSize: 14, fontWeight: 'bold', letterSpacing: 1.2, marginBottom: 5 }}>Filters</Text>
                     <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'flex-end'}}>
-                        <Text style={{ marginRight: 20, fontSize: 16 }}>Archive</Text>
+                        <Text style={{ marginRight: 10, fontSize: 14, color: 'white' }}>Archive</Text>
                         <Switch 
                             value={this.state.archive}
                             onValueChange={this.toggleArchive}
                         />
                     </View>
                     <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'flex-end', marginTop: 10}}>
-                        <Text style={{ marginRight: 20, fontSize: 16 }}>Export</Text>
+                        <Text style={{ marginRight: 10, fontSize: 14, color: 'white' }}>Export</Text>
                         <Switch 
                             value={this.state.export}
                             onValueChange={this.toggleExport}

@@ -57,15 +57,15 @@ class UtilityBar extends React.Component {
                     <Entypo name="arrow-with-circle-right" size={30} color="white" />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.confButtonStyle}
+                {/* <TouchableOpacity style={styles.confButtonStyle}
                                   onPress={ () => this.showVolumeSlider() }>
                     <Entypo name="controller-volume" size={30} color="white" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
-                <TouchableOpacity style={styles.confButtonStyle}
+                {/* <TouchableOpacity style={styles.confButtonStyle}
                                   onPress={ () => this.showVolumeSlider() }>
                     <Ionicons name="ios-speedometer" size={30} color="white" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
                 
         )

@@ -17,11 +17,11 @@ class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        {/* <PersistGate persistor={persistor}>  */}
+        <PersistGate persistor={persistor}> 
           <View style={styles.container}>
             <Navigator />
           </View>
-        {/* </PersistGate> */}
+        </PersistGate>
       </Provider>
     )
   }

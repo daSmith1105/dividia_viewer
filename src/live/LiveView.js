@@ -32,23 +32,6 @@ class LiveView extends React.Component {
             systems: this.props.authServers && this.props.authServers.length > 0 ? this.props.authServers.map(a => ( {label: a.sName, value: a.bSerial})) : [],
             selectedSystem: this.props.bSerial || this.props.authServers[0].bSerial
         })
-        setTimeout( () => {
-            let cam = this.props.enabled;
-
-            if(cam && cam.fEnable){ 
-                this.setState({
-                    enabled: cam.fEnable
-                }, () => {
-                    this.setState({
-                        loading: false
-                    })
-                })
-            } else {
-                this.setState({
-                    loading: false
-                })
-            }
-        }, 300)
         this.updateTimestamp();
     }
 
@@ -85,15 +68,20 @@ class LiveView extends React.Component {
   
                 <View style={{ height: 100, flexDirection: 'row',  justifyContent: 'space-between', marginTop: 40, marginBottom: 10 }}>
                     <View style={{ width: '35%', position: 'relative' }}>
-                        <Text style={{ position: 'absolute', bottom: 5, left: 12, padding: 0, fontSize: 12, color: 'white' }}>{moment(this.state.timestamp).format("MM/DD/YYYY hh:mm:ss a")}</Text>
+                        <Text style={{ position: 'absolute', bottom: 16, left: '25%', padding: 0, fontSize: 12, color: 'white' }}>
+                            {moment(this.state.timestamp).format("MM/DD/YYYY")}
+                        </Text>
+                        <Text style={{ position: 'absolute', bottom: 0, left: '25%', padding: 0, fontSize: 12, color: 'white' }}>
+                            {moment(this.state.timestamp).format('hh:mm:ss a')}
+                        </Text>
                     </View>
             
                     <View style={{ width: '65%', alignItems: 'flex-end', paddingRight: 10 }}>
                         <Text style={{ color: 'white', fontSize: 16, marginBottom: 2 }}>{version}</Text>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                            <Text style={{ color: 'white', fontSize: 16, marginRight: 10, marginBottom: 10 }}>View:</Text>
-                            <RNPickerSelect
+                            <Text style={{ color: 'white', fontSize: 16, marginRight: 10, marginBottom: 10 }}>View: {this.props.sName}</Text>
+                            {/* <RNPickerSelect
                                     useNativeAndroidPickerStyle={false}
                                     style={{ 
                                         inputAndroid:  styles.pickerSelectStyle,
@@ -110,12 +98,12 @@ class LiveView extends React.Component {
                                         { label: "Custom View 2", value: '3' },
                                         { label: "Custom View 3", value: '4' }
                                     ]}
-                                />
+                                /> */}
                         </View>
                        
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 8 }}>
-                            <Text style={{ color: 'white', fontSize: 16, marginRight: 10, marginBottom: 10 }}>System:</Text>
-                            <RNPickerSelect
+                            <Text style={{ color: 'white', fontSize: 16, marginRight: 10, marginBottom: 10 }}>System: {this.props.sName}</Text>
+                            {/* <RNPickerSelect
                                     useNativeAndroidPickerStyle={false}
                                     style={{ 
                                         inputAndroid:  styles.pickerSelectStyle,
@@ -127,7 +115,7 @@ class LiveView extends React.Component {
                                     value={this.state.selectedSystem}
                                     onValueChange={(value) => this.setState({selectedSystem: value}) }
                                     items={this.state.systems}
-                                />
+                                /> */}
                         </View>
                     </View>
                 </View>
@@ -145,13 +133,14 @@ class LiveView extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { cameras, authServers, bSerial } = state.server;
+    const { cameras, authServers, bSerial, sName } = state.server;
     const { isLoggedIn } = state.auth
     return {
       state,
       cameras,
       authServers,
       bSerial,
+      sName,
       isLoggedIn
   }
 }
