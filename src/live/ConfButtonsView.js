@@ -5,7 +5,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 
 
 const  ConfButtonsView = props => {
-    console.log(props.currentCamView)
+
     return (
         <View style={styles.confButtonsViewContainerStyle}>
             <TouchableOpacity style={styles.confButtonStyle1}
@@ -61,11 +61,12 @@ export default connect(mapStateToProps, {setSingleView, configChange, camViewCha
 const styles = {
     confButtonsViewContainerStyle: {
         flexDirection: 'row',
-        width: '90%',
+        width: '100%',
         maxWidth: 600, 
         alignItems: 'center', 
         justifyContent: 'space-around',
         marginTop: 10,
+        margin: 'auto'
     },
     confButtonStyle1: {
         padding: 10,

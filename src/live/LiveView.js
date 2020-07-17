@@ -9,6 +9,7 @@ import UtilityBar from './UtilityBar';
 import RNPickerSelect from 'react-native-picker-select';
 import { Ionicons } from '@expo/vector-icons';
 import VideoView from './VideoView'
+import moment from 'moment';
 
 const width = Dimensions.get('window').width;
 
@@ -20,8 +21,10 @@ class LiveView extends React.Component {
         this.state = {
             selectedView: '1',
             selectedSystem: 0,
-            systems: []
+            systems: [],
+            timestamp: Date.now()
         }
+        this.updateHandler = 0;
     }
 
     componentDidMount = () => {
@@ -29,10 +32,49 @@ class LiveView extends React.Component {
             systems: this.props.authServers && this.props.authServers.length > 0 ? this.props.authServers.map(a => ( {label: a.sName, value: a.bSerial})) : [],
             selectedSystem: this.props.bSerial || this.props.authServers[0].bSerial
         })
+        setTimeout( () => {
+            let cam = this.props.enabled;
+
+            if(cam && cam.fEnable){ 
+                this.setState({
+                    enabled: cam.fEnable
+                }, () => {
+                    this.setState({
+                        loading: false
+                    })
+                })
+            } else {
+                this.setState({
+                    loading: false
+                })
+            }
+        }, 300)
+        this.updateTimestamp();
     }
 
-    render(){
+    componentWillUnmount = () => {
+        clearTimeout(this.updateHandler);
+    }
 
+    updateTimestamp = () => {
+        this.setState({
+            timestamp: Date.now()
+        }, () => {
+            if(this.props.isLoggedIn) {
+                this.setState({
+                    timestamp: Date.now()
+                }, () => {
+                    this.updateHandler = setTimeout( () => { this.updateTimestamp(); this.updateHandler = 0 }, 1000 ) 
+                })
+                
+            } else {
+                clearTimeout(this.updateHandler);
+            }
+                
+        });
+    };
+
+    render(){
 
         return (
             <View style={styles.liveViewContainerStyle}>
@@ -42,7 +84,9 @@ class LiveView extends React.Component {
                 </View>
   
                 <View style={{ height: 100, flexDirection: 'row',  justifyContent: 'space-between', marginTop: 40, marginBottom: 10 }}>
-                    <View style={{ width: '35%'}}></View>
+                    <View style={{ width: '35%', position: 'relative' }}>
+                        <Text style={{ position: 'absolute', bottom: 5, left: 12, padding: 0, fontSize: 12, color: 'white' }}>{moment(this.state.timestamp).format("MM/DD/YYYY hh:mm:ss a")}</Text>
+                    </View>
             
                     <View style={{ width: '65%', alignItems: 'flex-end', paddingRight: 10 }}>
                         <Text style={{ color: 'white', fontSize: 16, marginBottom: 2 }}>{version}</Text>
@@ -88,11 +132,7 @@ class LiveView extends React.Component {
                     </View>
                 </View>
 
-                <VideoView />
-
-                <View style={{position: 'absolute', top: width /.85, width: '100%', height: 30, backgroundColor: 'lightgrey', justifyContent: 'center', zIndex: 20 }}>
-                    <Text style={{ textAlign: 'center', fontSize: 14, fontWeight: 'bold' }}>Test cam 1</Text>        
-                </View>
+                <VideoView ts={this.state.timestamp} />
 
                 <View style={{position: 'absolute', top: width /.8, width: '100%' }}> 
                     <ConfButtonsView />                            
@@ -105,12 +145,14 @@ class LiveView extends React.Component {
 }
 
 const mapStateToProps = state => {
-    const { cameras, authServers, bSerial } = state.server
+    const { cameras, authServers, bSerial } = state.server;
+    const { isLoggedIn } = state.auth
     return {
       state,
       cameras,
       authServers,
-      bSerial
+      bSerial,
+      isLoggedIn
   }
 }
 

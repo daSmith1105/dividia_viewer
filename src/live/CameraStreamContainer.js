@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text, Image, Dimensions } from 'react-native'
 import { connect } from 'react-redux';
+import { setSingleView } from '../actions';
 import placeholderImage from '../images/dtplaceholder.gif';
 import moment from 'moment';
 import { NoFlickerImage } from 'react-native-no-flicker-image';
+import DoubleClick from 'react-native-double-tap';
 
 const width = Dimensions.get('window').width;
-const defaultHeight = Math.floor(w / 2);
-let h = Math.floor(w / 1.3);
+let h = w / 1.3;
 let w = width;
 
 class CameraStreamContainer extends React.Component {
@@ -25,7 +26,7 @@ class CameraStreamContainer extends React.Component {
     }
 
     componentDidMount = () => {
-        h = defaultHeight;
+        h =  w / 1.3;
         this.setState({ 
             loading: true, 
             imgError: false
@@ -75,68 +76,76 @@ class CameraStreamContainer extends React.Component {
     
     render() {
 
-        switch (this.props.conf){
-            case 'conf-1':
-                h = width / 1.3;
-                w = width;
-                break;
-            case 'conf-4':
-                h = w / 1;
-                w = width / 2.5;
-                break;
-            case 'conf-6':
-                h = w / 1;
-                w = width / 3;
-                break;
-            case 'conf-9':
-                h = 300;
-                w = width / 3;
-                break;
-            case 'conf-12':
-                h = 300;
-                w = width / 4;
-                break;
-            case 'conf-16':
-                h = 300;
-                w = width / 4;
-                break;
-            default:
-                h = 300;
-                w = width;
+        if(this.props.fSingle === 1){
+            h = width / 1.3;
+            w = width;
+        } else {
+            switch (this.props.conf){
+                case 'conf-1':
+                    h = width / 1.3;
+                    w = width;
+                    break;
+                case 'conf-4':
+                    h = w / 1.3;
+                    w = width / 2;
+                    break;
+                case 'conf-6':
+                    h = w / .87;
+                    w = width / 3;
+                    break;
+                case 'conf-9':
+                    h = w / 1.3;
+                    w = width / 3;
+                    break;
+                case 'conf-12':
+                    h = width / 3.9;
+                    w = width / 4;
+                    break;
+                case 'conf-16':
+                    h = width / 5.2;
+                    w = width / 4;
+                    break;
+                default:
+                    h = width / 1.3;
+                    w = width;
+            }
         }
+        console.log(this.props.ts)
 
         return (
-            <View style={{ flexDirection: 'column', height: h, width: w }}> 
-               {/* </View> { this.state.enabled && !this.state.loading && this.props.enabled !== 'false' && this.props.userCameras.indexOf(parseInt(this.props.camNum)) > -1 ? */}
-                   {/* <View style={{ height: Math.floor(w), width: Math.floor(h) }}>
+            <View style={{ height: this.props.fSingle ? width / 1.3 : h, width: this.props.fSingle ? width : w, borderWidth: 1, borderColor: "rgba(0,0,0,0.8)" }}> 
+                { this.state.enabled && !this.state.loading && this.props.enabled !== 'false' && this.props.userCameras.indexOf(parseInt(this.props.camNum)) > -1 ? 
+                    <View style={{ height: '100%', width: '100%' }}>
+                         <DoubleClick
+                                singleTap={() => {
+                                    console.log("single tap");
+                                }}
+                                doubleTap={() => this.props.fSingle ? this.props.setSingleView() : this.props.conf !== 'conf-1' ? this.props.onDoublePress() : null }
+                                delay={200}
+                                >
+                            <NoFlickerImage
+                                style={{width: '100%', height: '100%' }}
+                                source={{uri: `http://205.201.69.172:7000/mpe/cam${this.props.camNum}.jpg?sess=${this.props.sSess}&ts=${this.props.ts}`}}
+                                />
+                            <View style={[styles.timestampContainerStyle, {overflow: 'hidden', height: this.props.conf !== 'conf-12' && this.props.conf !== 'conf-16' && !this.props.fSingle ? 14 : 12 }] }> 
+                                <Text style={[styles.timestampTextStyle, { fontSize: this.props.conf !== 'conf-12' && this.props.conf !== 'conf-16' && !this.props.fSingle ? 10 : 8 }]}>
+                                    {this.props.camNum + ' - ' + this.props.cameras.find( c => c.bID === parseInt(this.props.camNum)).sName} 
+                                </Text> 
+                            </View>
+                        </DoubleClick>
+                    </View>  :
+                    <View style={{ height: '100%', width: '100%' }}> 
                         <NoFlickerImage
-                            style={{width: Math.floor(w), height: Math.floor(h) }}
-                            source={{uri: `http://205.201.69.172:7000/mpe/cam${this.props.camNum}.jpg?sess=${this.props.sSess}&ts=${this.state.timestamp}`}}
-                            />
-                   <View style={styles.timestampContainerStyle}> */}
-
-                     {/* for 12 and 16 view arrange 2 lines - top is cam num etc, bottom is date time */}
-                       {/* <Text style={styles.timestampTextStyle}>
-                           {this.props.camNum + ' - ' + this.props.cameras.find( c => c.bID === parseInt(this.props.camNum)).sName}
-                       </Text>
-                       <Text style={styles.timestampTextStyle}>
-                           {moment(this.state.timestamp).format('MM/DD/YYYY HH:mm:ss')}
-                       </Text>
-                   </View>
-               </View> 
-                : */}
-                 <View style={{ height: '100%', width: '100%' }}> 
-                     <NoFlickerImage
-                             style={{width: '100%', height: '100%' }}
-                             source={placeholderImage}
-                             />
-                        {/* for 12 and 16 view arrange 2 lines - top is cam num etc, bottom is date time  */}
-                        <Text style={styles.timestampTextStyle}>
-                             {'Cam ' + this.props.camNum + ' - No Camera Enabled'}
-                         </Text> 
-                     </View> 
-                 {/* </View>  */}
-             {/* } */}
+                                style={{width: '100%', height: '100%' }}
+                                source={placeholderImage}
+                                />
+                        <View style={styles.timestampContainerStyle}> 
+                            <Text style={[styles.timestampTextStyle, { fontSize: this.props.conf !== 'conf-12' && this.props.conf !== 'conf-16' && !this.props.fSingle ? 10 : 8 }]}>
+                                {'Cam ' + '  ' + this.props.camNum} 
+                            </Text> 
+                        </View>
+                    </View> 
+                } 
             
             </View>
         )
@@ -164,7 +173,7 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps, {})(CameraStreamContainer);
+export default connect(mapStateToProps, {setSingleView})(CameraStreamContainer);
 
 const styles = { 
     innerContainerStyle: {
@@ -173,31 +182,17 @@ const styles = {
     },
     timestampContainerStyle: {
         position: 'absolute', 
-        bottom: 1, 
+        bottom: 0, 
         left: 0,
-        width: '99%', 
-        marginLeft: '.5%', 
+        width: '100%',  
         backgroundColor: 'rgba(0,0,0,0.8)', 
         alignItems: 'center', 
         justifyContent: 'space-between', 
-        padding: 5
-    },
-    timestampContainerStyle1: {
-        position: 'absolute', 
-        bottom: 1, 
-        left: 0,
-        width: '99%', 
-        marginLeft: '.5%', 
-        backgroundColor: 'rgba(0,0,0,0.3)', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        padding: 5
+        padding: 0
     },
     timestampTextStyle: {
         margin: 0, 
         padding: 0, 
-        fontWeight: 'bold',
-        fontSize: 10,  
         color: 'white'
     }
 }
