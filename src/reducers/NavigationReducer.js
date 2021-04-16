@@ -21,6 +21,7 @@ import {
       case JUMP_SYSTEM:
         return { 
           ...state,
+          previousSystem: state.currentSystem,
           currentSystem: action.payload
         }
       case LOGOUT_USER:

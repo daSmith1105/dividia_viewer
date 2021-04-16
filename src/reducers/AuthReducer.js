@@ -1,30 +1,61 @@
 import { 
-    LOGIN_USER_START,
     USERNAME_CHANGED,
     PASSWORD_CHANGED,
-    LOGIN_RESULT,
-    CLEAR_SESSION_MODAL,
-    LOGOUT_USER,
     AUTO_LOGIN_CHANGED,
-    SET_SESSION_FROM_STORAGE,
-    EXPIRE_SESSION,
+    LOGIN_USER_START,
+    LOGIN_RESULT,
+    CLEAR_LOGIN_RESULT,
     LOGIN_SUCCESS,
-    NVR_SEARCH_TEXT_CHANGED
+    LOGOUT_USER,
+
+    EXPIRE_SESSION,
+    CLEAR_SESSION_MODAL,
+
+    NVR_SEARCH_TEXT_CHANGED,
+    SET_NVR_SEARCH_RESULTS,
+    SET_NVR_SELECTED,
+    CLEAR_SELECTED_NVR,
+
+    JUMP_START,
+    JUMP_STATUS,
+    SET_VIEWS,
+    GET_SERVER,
+    SET_USER_DATA
   } from '../actions/types';
   
   const INITIAL_STATE = { 
     username: '', 
     password: '',
-    loading: false,
+    loginLoading: false,
     autoLoginStatus: false,
     loginResult: '',
     sSess: '',
     isLoggedIn: false,
-    nvrSearchText: ''
+    nvrSearchText: '',
+    nvrSearchResults: [],
+    nvrSelectedIp: '',
+    nvrSelected: {},
+    nvrSearchReturnedEmpty: false,
+    jumpLoading: false,
+    jumpStatus: '',
+    jumpSystemName: '',
+    loggingIntoNewServer: false,
+    gettingNewSession: false,
+    preppingData: false
   };
   
   export default ( state = INITIAL_STATE, action ) => {
     switch ( action.type ) {
+      case SET_USER_DATA:
+        return {
+          ...state,
+          preppingData: true
+        }
+      case SET_VIEWS:
+        return {
+          ...state,
+          loginLoading: false
+        }
       case USERNAME_CHANGED:
         return { 
           ...state, 
@@ -40,34 +71,81 @@ import {
           ...state, 
          autoLoginStatus: action.payload
         }
-      case  NVR_SEARCH_TEXT_CHANGED:
-        console.log('from reducer', action.payload)
-        return { 
-          ...state, 
-          nvrSearchText: action.payload
+      case JUMP_START:
+        return {
+          ...state,
+          jumpLoading: true,
+          jumpSystemName: action.payload,
+          loggingIntoNewServer: false,
+          gettingNewSession: false,
+          preppingData: false
         }
-      case SET_SESSION_FROM_STORAGE:
+      case GET_SERVER:
+        return {
+          ...state,
+          gettingNewSession: true
+        }
+      case JUMP_STATUS:
+        return {
+          ...state,
+          jumpLoading: false,
+          jumpStatus: action.payload
+        }
+      case NVR_SEARCH_TEXT_CHANGED:
+        let resultArr = state.nvrSearchResults;
+        if(action.payload.trim().length < 3){
+          resultArr = []
+        }
         return { 
           ...state, 
-          sSess: action.payload
+          nvrSearchText: action.payload,
+          nvrSearchResults: resultArr
+        }
+      case SET_NVR_SEARCH_RESULTS:
+        return { 
+          ...state, 
+          nvrSearchResults: action.payload,
+          nvrSearchReturnedEmpty: action.payload.length < 1 ? true : false,
+          loginLoading: false
+        }
+      case SET_NVR_SELECTED: {
+        return { 
+          ...state,
+          nvrSelected: action.payload,
+          nvrSelectedIp: action.selectedServerIp,
+          nvrSearchText: action.payload.sName
+        }
+      }
+      case CLEAR_LOGIN_RESULT: {
+        return {
+          ...state,
+          loginResult: '',
+          loginLoading: false
+        }
+      }
+      case CLEAR_SELECTED_NVR:
+        return {
+          ...state,
+          username: '', 
+          password: '',
+          loginloading: false,
+          autoLoginStatus: false,
+          loginResult: '',
+          sSess: '',
+          isLoggedIn: false,
+          nvrSelected: {},
+          nvrSelectedIp: '',
+          nvrSearchReturnedEmpty: false
         }
       case LOGIN_USER_START:
         return { 
           ...state, 
-          loading: true
+          loginLoading: true
         }
       case EXPIRE_SESSION:
-        let uName = '';
-        let uPass = '';
-        if(action.payload) {
-          uName = localStorage.getItem('username');
-          uPass = localStorage.getItem('password');
-        }
         return { 
           ...state, 
-          username: uName, 
-          password: uPass,
-          loading: false,
+          loginLoading: false,
           loginResult: 'expired',
           sSess: '',
           isLoggedIn: false
@@ -76,30 +154,34 @@ import {
         return { 
           ...state, 
           loginResult: '',
-          loading: false,
           sSess: action.payload,
-          isLoggedIn: true
+          isLoggedIn: true,
+          loggingIntoNewServer: true,
         }
       case LOGIN_RESULT:
         return { 
           ...state, 
           loginResult: action.payload,
-          loading: false
+          loginLoading: false
         }
       case LOGOUT_USER:
         return { 
           ...state, 
-          username: '', 
-          password: '',
-          loading: false,
           loginResult: '',
+          loginLoading: false,
           sSess: '',
-          isLoggedIn: false
+          isLoggedIn: false,
+          jumpLoading: false,
+          jumpStatus: ''
         }
       case CLEAR_SESSION_MODAL:
         return { 
           ...state, 
-          loginResult: ''
+          loginLoading: false,
+          autoLoginStatus: false,
+          loginResult: '',
+          sSess: '',
+          isLoggedIn: false
         }
       default:
         return state;

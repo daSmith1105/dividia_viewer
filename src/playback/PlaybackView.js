@@ -6,23 +6,38 @@ import SearchBlock from './SearchBlock';
 import PlayerWindow from './PlayerWindow';
 import PlaybackControls from './PlaybackControls';
 import FlagBlock from './FlagBlock';
+import ClipContainer from './ClipContainer';
 import UtilityBar from './UtilityBar';
 
 class PlaybackView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            temp: 1
+            timestamp: '',
+            cameras: []
         }
+    }
+
+    setTimestamp = (stamp) => {
+        this.setState({ timestamp: stamp })
+    }
+
+    componentWillUnmount = () => {
+        this.setState({ timestamp: '' })
+    }
+
+    setCamerasEview = (cams) => {
+        this.setState({ cameras: cams})
     }
 
     render(){
         return (
             <View style={styles.playbackViewContainerStyle}>
-              <SearchBlock />
-              <PlayerWindow />
-              <FlagBlock />
-              <UtilityBar />
+                <SearchBlock setCamerasEview={this.setCamerasEview} />
+                <PlayerWindow timestamp={this.state.timestamp} setTimestamp={this.setTimestamp} camerasEview={this.state.cameras}/> 
+                {/* <FlagBlock /> */}
+                <ClipContainer timestamp={this.state.timestamp} setTimestamp={this.setTimestamp} />
+                <UtilityBar />
             </View>
                 
         )
@@ -30,8 +45,9 @@ class PlaybackView extends React.Component {
 }
 
 const mapStateToProps = state => {
+    const { currentClipPlayingUrl } = state.playback;
     return {
-      state
+        currentClipPlayingUrl
   }
 }
 

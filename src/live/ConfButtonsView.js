@@ -1,42 +1,42 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { setSingleView, configChange, camViewChange } from '../actions';
-import { View, Text, Image, TouchableOpacity } from 'react-native'; 
+import { View, Text, TouchableOpacity } from 'react-native'; 
 
 
 const  ConfButtonsView = props => {
 
     return (
         <View style={styles.confButtonsViewContainerStyle}>
-            <TouchableOpacity style={styles.confButtonStyle1}
-                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-1"); props.camViewChange("cam_1") } }>
+            <TouchableOpacity style={[styles.confButtonStyle1, {backgroundColor: props.conf === 'conf-1' ? '#135CA3' : 'rgba(0,0,0,0.5)'}]}
+                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-1"); props.camViewChange("1") } }>
                 <Text style={styles.confButtonTextStyle}>1</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.confButtonStyle1}
-                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-4"); props.camViewChange("cam_1-4") } }>
+            <TouchableOpacity style={[styles.confButtonStyle1, {backgroundColor: props.conf === 'conf-4' ? '#135CA3' : 'rgba(0,0,0,0.5)'}]}
+                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-4"); props.camViewChange("1-4") } }>
                 <Text style={styles.confButtonTextStyle}>4</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.confButtonStyle1}
-                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-6"); props.camViewChange("cam_1-6") } }>
+            {/* <TouchableOpacity style={[styles.confButtonStyle1, {backgroundColor: props.conf === 'conf-6' ? '#135CA3' : 'rgba(0,0,0,0.5)'}]}
+                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-6"); props.camViewChange("1-6") } }>
                 <Text style={styles.confButtonTextStyle}>6</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.confButtonStyle1}
-                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-9"); props.camViewChange("cam_1-9") } }>
+            <TouchableOpacity style={[styles.confButtonStyle1, {backgroundColor: props.conf === 'conf-9' ? '#135CA3' : 'rgba(0,0,0,0.5)'}]}
+                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-9"); props.camViewChange("1-9") } }>
                 <Text style={styles.confButtonTextStyle}>9</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.confButtonStyle2}
-                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-12"); props.camViewChange("cam_1-12") } }>
+            <TouchableOpacity style={[styles.confButtonStyle2, {backgroundColor: props.conf === 'conf-12' ? '#135CA3' : 'rgba(0,0,0,0.5)'}]}
+                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-12"); props.camViewChange("1-12") } }>
                 <Text style={styles.confButtonTextStyle}>12</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.confButtonStyle2}
-                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-16"); props.camViewChange("cam_1-16") } }>
+            <TouchableOpacity style={[styles.confButtonStyle2, {backgroundColor: props.conf === 'conf-16' ? '#135CA3' : 'rgba(0,0,0,0.5)'}]}
+                                onPress={ () => { props.singleCamSelected && props.setSingleView(''); props.configChange("conf-16"); props.camViewChange("1-16") } }>
                 <Text style={styles.confButtonTextStyle}>16</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
             
     )
@@ -64,17 +64,19 @@ const styles = {
         width: '100%',
         maxWidth: 600, 
         alignItems: 'center', 
-        justifyContent: 'space-around',
-        marginTop: 10,
-        margin: 'auto'
+        justifyContent: 'center',
+        marginLeft: 'auto',
+        marginRight: 'auto', 
+        marginTop: 20,
     },
     confButtonStyle1: {
         padding: 10,
         paddingRight: 15,
         paddingLeft: 15, 
         borderRadius: 5,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginRight: 20, 
+        marginLeft: 20
     },
     confButtonStyle2: {
         padding: 10,

@@ -18,7 +18,6 @@ class UtilityBar extends React.Component {
                                   onPress={ () => this.props.screenChange('live')}>
                     <Foundation name="play-video" size={30} color="white" />
                     <Text style={styles.confButtonTextStyle}>live</Text>
-                    <Text style={styles.confButtonTextStyle}>view</Text>
                 </TouchableOpacity>
 
                 {/* <TouchableOpacity style={styles.confButtonStyle}
@@ -50,10 +49,9 @@ class UtilityBar extends React.Component {
                 </TouchableOpacity> */}
 
                 <TouchableOpacity style={styles.confButtonStyle}
-                                  onPress={ () => this.props.logoutUser(this.props.sSess, 'http://205.201.69.172:7000/JSON/')}>
+                                  onPress={ () => this.props.logoutUser(this.props.sSess, this.props.sServerJson)}>
                     <MaterialCommunityIcons name="logout-variant" size={31} color="white" />
                     <Text style={styles.confButtonTextStyle}>logout</Text>
-                    <Text style={styles.confButtonTextStyle}></Text>
                 </TouchableOpacity>
             </View>
                 
@@ -63,8 +61,10 @@ class UtilityBar extends React.Component {
 
 const mapStateToProps = state => {
     const { sSess } = state.auth;
+    const { sServerJson } = state.server;
     return {
-      sSess
+      sSess,
+      sServerJson
   }
 }
 
@@ -74,15 +74,15 @@ const styles = {
     confButtonsViewContainerStyle: {
         flexDirection: 'row',
         width: '100%',
-        maxWidth: 600, 
         alignItems: 'center', 
         justifyContent: 'space-around',
         backgroundColor: 'white',
-        paddingTop: 10,
-        paddingBottom: 10
+        paddingTop: 6,
+        paddingBottom: 8,
+        marginTop: 6
     },
     confButtonStyle: {
-        padding: 5,
+        padding: 0,
         width: '13%', 
         borderRadius: 5,
         backgroundColor: 'rgba(0,0,0,0.5)',
@@ -91,6 +91,7 @@ const styles = {
     confButtonTextStyle: {
         color: 'white', 
         fontSize: 10,
-        textAlign: 'center'
+        textAlign: 'center',
+        marginBottom: 5
     }
 }

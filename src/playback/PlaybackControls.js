@@ -31,10 +31,10 @@ class UtilityBar extends React.Component {
                       <Entypo name="controller-fast-backward" size={30} color="white" />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.confButtonStyle}
+                {/* <TouchableOpacity style={styles.confButtonStyle}
                                   onPress={ () => this.props.stop()}>
                      <Entypo name="controller-stop" size={30} color="white" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 { this.props.isPlaying ? 
                     <TouchableOpacity style={{ paddingRight: 8, paddingLeft: 8 }}

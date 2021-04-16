@@ -14,12 +14,15 @@ class UtilityBar extends React.Component {
     render(){
         return (
             <View style={styles.confButtonsViewContainerStyle}>
-                <TouchableOpacity style={styles.confButtonStyle}
-                                  onPress={ () => this.props.screenChange('playback')}>
-                    <Foundation name="play-video" size={30} color="white" />
-                    <Text style={styles.confButtonTextStyle}>video</Text>
-                    <Text style={styles.confButtonTextStyle}>player</Text>
-                </TouchableOpacity>
+                {this.props.userRights && this.props.userRights !== [] && this.props.userRights.size > 0 && this.props.userRights.get(this.props.bSerial) && this.props.userRights.get(this.props.bSerial).indexOf(32) > -1 ? 
+                    <TouchableOpacity style={styles.confButtonStyle}
+                                    onPress={ () => this.props.screenChange('playback')}>
+                        <Foundation name="play-video" size={30} color="white" />
+                        <Text style={styles.confButtonTextStyle}>video</Text>
+                        <Text style={styles.confButtonTextStyle}>player</Text>
+                    </TouchableOpacity> :
+                null
+                }
 
                 {/* <TouchableOpacity style={styles.confButtonStyle}
                                   onPress={ () => alert('swap button pressed')}>
@@ -57,7 +60,7 @@ class UtilityBar extends React.Component {
                 </TouchableOpacity> */}
 
                 <TouchableOpacity style={styles.confButtonStyle}
-                                  onPress={ () => this.props.logoutUser(this.props.sSess, 'http://205.201.69.172:7000/JSON/')}>
+                                  onPress={ () => this.props.logoutUser(this.props.sSess, this.props.sServerJson )}>
                     <MaterialCommunityIcons name="logout-variant" size={31} color="white" />
                     <Text style={styles.confButtonTextStyle}>logout</Text>
                     <Text style={styles.confButtonTextStyle}></Text>
@@ -70,8 +73,13 @@ class UtilityBar extends React.Component {
 
 const mapStateToProps = state => {
     const { sSess } = state.auth;
+    const { sServerJson, bSerial } = state.server;
+    const { userRights } = state.user;
     return {
-      sSess
+      sSess,
+      sServerJson,
+      bSerial,
+      userRights
   }
 }
 
@@ -81,7 +89,6 @@ const styles = {
     confButtonsViewContainerStyle: {
         flexDirection: 'row',
         width: '100%',
-        maxWidth: 600, 
         alignItems: 'center', 
         justifyContent: 'space-around',
         marginTop: 10,

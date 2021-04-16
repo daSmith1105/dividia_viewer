@@ -1,41 +1,24 @@
 import { 
-    SET_PLATFORM_TYPE,
-    SET_BROWSER_TYPE,
     UPDATE_CURRENT_TIME,
-    LOGOUT_USER,
-    EXPIRE_SESSION
+    SET_NVR_TIMESTAMP
   } from '../actions/types';
 
   import moment from 'moment';
   
   const INITIAL_STATE = { 
-    platform: '',
-    sBrowser: '',
     currentTimeLong: moment(new Date()).format('hh:mm:ss a'),
     currentTimeShort: moment(new Date()).format('hh:mm a'),
+    nvrTimestamp: '',
+    nvrTimestampShort: ''
   };
   
   export default ( state = INITIAL_STATE, action ) => {
     switch ( action.type ) {
-      case LOGOUT_USER:
+      case SET_NVR_TIMESTAMP:
         return { 
           ...state, 
-          platform: ''
-        }
-      case EXPIRE_SESSION:
-        return { 
-          ...state, 
-          platform: ''
-        }
-      case SET_PLATFORM_TYPE:
-        return { 
-          ...state, 
-          platform: action.payload 
-        }
-      case SET_BROWSER_TYPE:
-        return { 
-          ...state, 
-          sBrowser: action.payload 
+          nvrTimestamp: action.nvrTimestamp,
+          nvrTimestampShort: action.nvrTimestampShort
         }
       case UPDATE_CURRENT_TIME:
         return { 

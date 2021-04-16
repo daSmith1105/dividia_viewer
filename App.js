@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet,  StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import { store, persistor} from './src/store';
@@ -11,14 +11,16 @@ class App extends React.Component {
 
     this.state = {
       temp: 1
-    }
-  }
+    };
+  };
 
   render() {
+    console.disableYellowBox = true; 
     return (
       <Provider store={store}>
         <PersistGate persistor={persistor}> 
           <View style={styles.container}>
+            <StatusBar hidden />
             <Navigator />
           </View>
         </PersistGate>

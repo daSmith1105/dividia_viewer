@@ -1,59 +1,90 @@
 import { 
-    SET_PLATFORM_TYPE,
-    UPDATE_CURRENT_TIME
+    UPDATE_CURRENT_TIME,
+    SET_NVR_TIMESTAMP,
+    SET_NVR_SELECTED
   } from './types';
+
+  import axios from 'axios';
   
-  export const getPlatform = () => {
-    return (dispatch) => {
-        let platform = navigator.platform;
-        let type = '';
-        if(platform.indexOf('Win') > -1) {
-            type = 'Win'
-        } else if(platform.indexOf('Mac') > -1) {
-            type = 'Mac'
-        } else if(platform.indexOf('iPad') > -1) {
-            type = 'Ios'
-        } else if(platform.indexOf('iPhone') > -1) {
-            type = 'Ios'
-        } else if(platform.indexOf('Android') > -1 || platform.indexOf('Linux') > -1 ) {
-            type = 'Android'
-        };
-
-        dispatch({ type: SET_PLATFORM_TYPE, payload: type });
-        return(type)
-    };
-};  
-
-export const getBrowser = () => {
-    return (dispatch) => {
-        let platform = navigator.userAgent;
-        let sBrowser = 'Unknown';
-        if(platform.indexOf("Firefox") > -1) {
-            sBrowser = "firefox";
-        }
-        if(platform.indexOf("Safari") > -1) {
-            sBrowser = "safari";
-        }
-        if(platform.indexOf("Opera") > -1 || platform.indexOf("OPR") > -1 ) {
-            sBrowser = "opera";
-        } 
-        if(platform.indexOf("Chrome") > -1) {
-            sBrowser = "chrome";
-        }
-        if(platform.indexOf("Trident") > -1) {
-            sBrowser = "explorer";
-        }
-        if(platform.indexOf("Edge") > -1) {
-            sBrowser = "edge";
-        }
-
-        dispatch({ type: SET_BROWSER_TYPE, payload: sBrowser });
-        return (sBrowser);
-    };
-};  
-
 export const updateCurrentTime = () => {
     return {
         type: UPDATE_CURRENT_TIME
+    }
+}
+
+export const getNvrTimestamp = (sSess, sServer) => {
+    return async (dispatch) => {
+        const reqBody = {   
+            "jsonrpc": 2.0,
+            "method": "config.dtime.getAll",
+            "id": 200,
+            "params": [sSess]
+        };
+        await axios({
+            method: 'post',
+            url: sServer,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            data: reqBody,
+            timeout: 2000
+        })
+        .then( async response => {
+            let data = await response.data.result[1].sTimestamp;
+            if(data && data.length > 4) {
+                let year = data.slice(0,4);
+                let month = data.slice(4,6);
+                let day = data.slice(6,8);
+                let hour = data.slice(8,10);
+                let minute = data.slice(10,12);
+                let second = data.slice(12,14);
+                let datetime = `${month}/${day}/${year} ${hour}:${minute}:${second}`;
+                dispatch({ type: SET_NVR_TIMESTAMP, nvrTimestamp: datetime, nvrTimestampShort: data });
+            }
+        })
+        .catch(error => {
+            console.log(error)
+        })  
+    }
+}
+
+export const whichIp = (server, localIp, remoteIp, port) => {
+    return async (dispatch) => {
+        // attempt local ip
+        await axios({
+            method: 'get',
+            url: 'http://' + localIp,
+            timeout: 2000
+        })
+        .then((response) => {
+            dispatch({
+                type: SET_NVR_SELECTED,
+                payload: server,
+                selectedServerIp: 'http://' + localIp
+            })
+        })
+        .catch(async (error) => {
+            // attempt remote ip
+            await axios({
+                method: 'get',
+                url: 'http://' + remoteIp + ':' + port,
+                timeout: 2000
+            })
+            .then((response) => {
+                dispatch({
+                    type: SET_NVR_SELECTED,
+                    payload: server,
+                    selectedServerIp: 'http://' + remoteIp + ':' + port
+                })
+            })
+            .catch((error) => {
+                dispatch({
+                    type: SET_NVR_SELECTED,
+                    payload: {},
+                    selectedServerIp: 'none'
+                })
+            })
+        })
     }
 }

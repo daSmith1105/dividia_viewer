@@ -1,7 +1,9 @@
 import { 
     CONFIG_CHANGED,
     LOGOUT_USER,
-    EXPIRE_SESSION
+    EXPIRE_SESSION,
+    JUMP_START,
+    SET_VIEWS
   } from '../actions/types';
   
   const INITIAL_STATE = { 
@@ -27,6 +29,16 @@ import {
           }
         case EXPIRE_SESSION:
           return { 
+            ...state,
+            conf: 'conf-1'
+          }
+        case JUMP_START:
+          return {
+            ...state,
+            conf: 'conf-4'
+          }
+        case SET_VIEWS:
+          return {
             ...state,
             conf: 'conf-1'
           }

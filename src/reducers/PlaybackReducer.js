@@ -8,10 +8,10 @@ import {
     SET_CURRENT_CLIP_PLAYING,
     SET_SPEED,
     LOGOUT_USER,
-    EXPIRE_SESSION
+    EXPIRE_SESSION,
+    SCREEN_CHANGE,
+    SET_SELECTED_CAM
   } from '../actions/types';
-  
-  import moment from 'moment';
   
   const INITIAL_STATE = { 
     playbackCamera: 1,
@@ -27,11 +27,41 @@ import {
     currentClipPlayingTimestamp: '',
     currentClipPlayingCameraId: 1,
     currentClipPlayingDuration: 0,
-    playbackRate: 1.0
+    playbackRate: 1.0,
+    selectedCam: 1
   };
   
   export default ( state = INITIAL_STATE, action ) => {
     switch ( action.type ) {
+      case SET_SELECTED_CAM:
+        return {
+          ...state,
+          selectedCam: action.payload
+        }
+      case SCREEN_CHANGE:
+        if( action.payload !== 'playback') {
+          return { 
+            ...state, 
+            playbackCamera: 1,
+            playbackDate: new Date(),
+            playbackTime: new Date(),
+            archiveFilterState: false,
+            exportFilterState: false,
+            videoClipsRequested: [],
+            prevClipsetTimestamp: '',
+            nextClipsetTimestamp: '',
+            curretClipPlayingId: 0,
+            currentClipPlayingUrl: '',
+            currentClipPlayingTimestamp: '',
+            currentClipPlayingCameraId: 1,
+            currentClipPlayingDuration: 0,
+            // selectedCam: 1
+          }
+      } else {
+        return {
+          ...state
+        }
+      }
       case LOGOUT_USER:
         return { 
           ...state, 
@@ -81,7 +111,6 @@ import {
           nextClipsetTimestamp: ''
         }
       case SET_DATE:
-        console.log(action.payload)
         return { 
           ...state, 
           playbackDate: action.payload
@@ -92,7 +121,6 @@ import {
           playbackRate: action.payload 
         }
       case SET_TIME:
-        console.log(action.payload)
         return { 
           ...state, 
           playbackTime: action.payload 
@@ -152,9 +180,11 @@ import {
         let newTimestamp1;
         let newCameraId1;
         let newDuration1;
+        let newCamIp;
         if(action.payload.length > 0) {
           newClip1 = action.payload[0].bID;
           newUrl1 = action.payload[0].sMovie;
+          newCamIp = action.ip;
           newCameraId1 = action.payload[0].bCamera;
           newDuration1 = action.payload[0].bLength + 1;
           let tempTime1 = action.payload[0].sTimestamp;
@@ -164,26 +194,27 @@ import {
           let hour1 = tempTime1.slice(8,10);
           let min1 = tempTime1.slice(10,12);
           let sec1 = tempTime1.slice(12,14);
-          newTimestamp1 = `${month1}/${day1}/${year1}  ${hour1}:${min1}:${sec1}`
-        }
-  
-        return { 
-          ...state, 
-          videoClipsRequested: action.payload,
-          prevClipsetTimestamp: action.prevClipsetTimestamp,
-          nextClipsetTimestamp: action.nextClipsetTimestamp,
-          currentClipPlayingId: newClip1 || state.currentClipPlayingId,
-          currentClipPlayingUrl: newUrl1 || state.currentClipPlayingUrl,
-          currentClipPlayingTimestamp: newTimestamp1 || state.currentClipPlayingTimestamp,
-          currentClipPlayingCameraId: newCameraId1 || state.currentClipPlayingCameraId,
-          currentClipPlayingDuration: newDuration1 || state.currentClipPlayingDuration
+          newTimestamp1 = `${month1}/${day1}/${year1}  ${hour1}:${min1}:${sec1}`;
+
+          return { 
+            ...state, 
+            videoClipsRequested: action.payload,
+            prevClipsetTimestamp: action.prevClipsetTimestamp,
+            nextClipsetTimestamp: action.nextClipsetTimestamp,
+            currentClipPlayingId: newClip1,
+            currentClipPlayingUrl: newUrl1,
+            currentClipPlayingTimestamp: newTimestamp1,
+            currentClipPlayingCameraId: newCameraId1,
+            currentClipPlayingDuration: newDuration1,
+            currentClipPlayingIp: newCamIp
+          }
         }
       case RESET_PLAYBACK:
         return { 
           ...state, 
           playbackCamera: 1,
-          playbackDate: moment(new Date()).format('YYYY-MM-DD'),
-          playbackTime: moment(new Date()).format('HH:mm'),
+          playbackDate: new Date(),
+          playbackTime: new Date(),
           archiveFilterState: false,
           exportFilterState: false,
           videoClipsRequested: [],
