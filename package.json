@@ -6,7 +6,6 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject"
-    
   },
   "dependencies": {
     "@expo/vector-icons": "^10.2.0",

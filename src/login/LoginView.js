@@ -133,6 +133,11 @@ class LoginView extends React.Component {
         }
     }
 
+    // this is used to populate text input in NVRSearch when the server connection fails - 404 no connection
+    setServerToLoad = text => {
+        this.setState({ serverToLoad: {sName: text} });
+    }
+
     render() {
         return (
             <KeyboardAvoidingView style={styles.loginViewContainerStyle}>
@@ -318,7 +323,8 @@ class LoginView extends React.Component {
                             searchFocused={this.state.searchFocused} 
                             removeSearchFocus={this.removeSearchFocus}
                             loadingNewServer={this.state.loadingNewServer}
-                            serverToLoad={this.state.serverToLoad} />
+                            serverToLoad={this.state.serverToLoad}
+                            setServerToLoad={this.setServerToLoad} />
 
                 { !this.state.searchFocused && !this.state.inputFocused ?
                     <Text style={styles.footerTextStyle}>Improving Business Management</Text> :

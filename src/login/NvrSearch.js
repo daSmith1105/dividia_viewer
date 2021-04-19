@@ -23,12 +23,12 @@ class NvrSearch extends React.Component {
 
     startNvrSearch = async (item, localIp, ip, port) => {
       this.props.removeSearchFocus();
-      this.props.nvrSearchTextChanged(item.sName)
+      this.props.nvrSearchTextChanged(item.sName);
       this.setState({ searching: true });
       await this.props.whichIp(item, localIp, ip, port);
       this.setState({ searching: false });
       if(this.props.nvrSelectedIp && this.props.nvrSelectedIp.length > 1 &&  this.props.nvrSelectedIp !== 'none' ) {
-        this.loadSelectedNvr()
+        this.loadSelectedNvr();
       }
     }
 
@@ -36,7 +36,8 @@ class NvrSearch extends React.Component {
       // ** if nvrSelected is online
       // call get server and present login to user - change color from grey to blue 
       const serverUrl = this.props.nvrSelectedIp + '/JSON/';
-      this.props.getServer(serverUrl);
+      this.props.getServer(serverUrl, this.props.nvrSearchText);
+      this.props.setServerToLoad(this.props.nvrSearchText);
       this.props.removeSearchFocus();
     }
 
@@ -179,8 +180,8 @@ class NvrSearch extends React.Component {
                   </View>:
                   <Text style={styles.searchIpTextStyle}>{this.props.nvrSearchReturnedEmpty ? 'no servers found for "' + this.props.nvrSearchText + '"' : this.props.nvrSelectedIp !== 'none' ? this.props.nvrSelectedIp : ''}</Text>
                 }
-                  <Text style={ [styles.searchOnlineIndicatorText, { color: (this.state.searching || this.props.nvrSelectedIp === '') ? 'transparent' : this.props.nvrSelectedIp !== 'none' ? 'lime' : 'goldenrod'}] }>
-                    { ( this.state.searching || this.props.nvrSelectedIp === '' || this.props.loadingNewServer || this.props.nvrSearchReturnedEmpty ) ? '' : this.props.nvrSelectedIp !== 'none' ? 'Online' : 'Offline' } 
+                  <Text style={ [styles.searchOnlineIndicatorText, { color: (this.state.searching || this.props.nvrSelectedIp === '') ? 'transparent' : this.props.nvrSelectedIp !== 'none' && !this.props.serverConnectionError ? 'lime' : 'goldenrod'}] }>
+                    { ( this.state.searching || this.props.nvrSelectedIp === '' || this.props.loadingNewServer || this.props.nvrSearchReturnedEmpty ) ? '' : this.props.nvrSelectedIp !== 'none' && !this.props.serverConnectionError ? 'Online' : 'Offline' } 
                   </Text>
               </View>
 
@@ -206,7 +207,7 @@ class NvrSearch extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { nvrSearchText, nvrSearchResults, nvrSelected, nvrSelectedIp, nvrSearchReturnedEmpty } = state.auth;
+  const { nvrSearchText, nvrSearchResults, nvrSelected, nvrSelectedIp, nvrSearchReturnedEmpty, serverConnectionError } = state.auth;
   const { serverHistory } = state.server;
     return {
       nvrSearchText,
@@ -214,6 +215,7 @@ const mapStateToProps = state => {
       nvrSelected,
       nvrSelectedIp,
       nvrSearchReturnedEmpty,
+      serverConnectionError,
       serverHistory
   }
 }

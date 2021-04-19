@@ -31,7 +31,8 @@ import {
     // SET_DATE_FORMAT, // set date format for the current server
     SET_USER_DATA, // set user data for the current user
     SET_USER_RIGHTS , // array of rights for all auth servers for the current user
-    SET_CAMERA_RIGHTS , // camera permissions bys dvr serial for the current user
+    SET_CAMERA_RIGHTS , // camera permissions bys dvr serial for the current user,
+    SERVER_CONNECTION_ERROR // could not connect to a selected Server
 
   } from './types';
   
@@ -162,51 +163,73 @@ export const setNumcams = (num) => {
     }
 }
 
-export const getServer = ( sServer ) => {
+export const getServer = ( sServer, text ) => {
     return async( dispatch ) => {
-        const reqBody = {   
-            "jsonrpc": 2.0,
-            "method": "config.meta.getStartup",
-            "id": 200
+        // make sure we can connect to the selected server
+        const connection = await isAlive(sServer);
+        if(connection){
+            const reqBody = {   
+                "jsonrpc": 2.0,
+                "method": "config.meta.getStartup",
+                "id": 200
+            };
+
+            await axios({
+                method: 'post',
+                url: sServer,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                data: reqBody,
+                timeout: 4000
+            })
+            .then( response => {
+                if(!response || response.status === 404) {
+                    dispatch({
+                        type: SERVER_CONNECTION_ERROR,
+                        payload: text
+                    })
+                    return;
+                };
+                let authServers = new Map();
+                const line1 = response.data.result[0];
+                const data = response.data.result[1];
+                let general =  data[Object.keys(data)[0]];
+                let features = general.rgsFeature;
+                let posTypes = general.rgsPosTypes;
+                // create a hash map of auth servers
+                data[Object.keys(data)[1]].forEach( sv => authServers.set(sv.bSerial, {'bSerial': sv.bSerial, 'sIP': sv.sIP, 'sLocalIP': sv.sLocalIP, 'bPort': sv.bPort, 'sName': sv.sName, 'sVersion': sv.sVersion }))
+                let usersOnline = data[Object.keys(data)[2]]
+                dispatch({
+                    type: GET_SERVER,
+                    bSerial: general.bSerial,
+                    sName: general.sName,
+                    sVersion: general.sVersion,
+                    bNumcams: general.bNumcams, // number of system supported cams
+                    features: features, // most notably 'eview'
+                    posTypes: posTypes, 
+                    authServers: authServers, // an array of objects with properties: { bPort, bRtspPort, bSerial, bTimestamp, fLocal, sIP, sLocalIP, sName, sVersion }
+                    usersOnline: usersOnline // an array of users online [ 'username', 'username' ]
+                })   
+            })
+            .catch(err => {
+                console.error('Error, yep:', err);
+                dispatch({
+                    type: SERVER_CONNECTION_ERROR,
+                    payload: text
+                })
+            }); 
         };
 
-        await axios({
-            method: 'post',
-            url: sServer,
-                headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            data: reqBody,
-            timeout: 4000
-        })
-        .then( async response => {
-            let authServers = new Map();
-            const line1 = response.data.result[0];
-            const data = response.data.result[1];
-            let general =  data[Object.keys(data)[0]];
-            let features = general.rgsFeature;
-            let posTypes = general.rgsPosTypes;
-            // create a hash map of auth servers
-            data[Object.keys(data)[1]].forEach( sv => authServers.set(sv.bSerial, {'bSerial': sv.bSerial, 'sIP': sv.sIP, 'sLocalIP': sv.sLocalIP, 'bPort': sv.bPort, 'sName': sv.sName, 'sVersion': sv.sVersion }))
-            let usersOnline = data[Object.keys(data)[2]]
-
-            // console.log('get server: ', data)
+        if(!connection) {
+            console.log('could not connect to server');
             dispatch({
-                type: GET_SERVER,
-                bSerial: general.bSerial,
-                sName: general.sName,
-                sVersion: general.sVersion,
-                bNumcams: general.bNumcams, // number of system supported cams
-                features: features, // most notably 'eview'
-                posTypes: posTypes, 
-                authServers: authServers, // an array of objects with properties: { bPort, bRtspPort, bSerial, bTimestamp, fLocal, sIP, sLocalIP, sName, sVersion }
-                usersOnline: usersOnline // an array of users online [ 'username', 'username' ]
-            })   
-        })
-        .catch(err => {
-            console.error('Error, yep:', err);
-        }); 
+                type: SERVER_CONNECTION_ERROR,
+                payload: text
+            })
+        };
+
     }
 }; 
   
@@ -612,7 +635,7 @@ const loginUserFromJump = async( dispatch, sName, sPass, sServer, bSerial ) => {
                     getPostLogin(dispatch, result, sServer, sName, sPass)
                 })
                 .catch(err => {
-                    console.error('Error, yep:', err);
+                    console.error('Error, what: ', err);
                 }); 
             } else {
                 alert('we did not get a auth key so we need to revert back to previous system')

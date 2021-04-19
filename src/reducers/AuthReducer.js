@@ -20,7 +20,8 @@ import {
     JUMP_STATUS,
     SET_VIEWS,
     GET_SERVER,
-    SET_USER_DATA
+    SET_USER_DATA,
+    SERVER_CONNECTION_ERROR
   } from '../actions/types';
   
   const INITIAL_STATE = { 
@@ -41,7 +42,8 @@ import {
     jumpSystemName: '',
     loggingIntoNewServer: false,
     gettingNewSession: false,
-    preppingData: false
+    preppingData: false,
+    serverConnectionError: false
   };
   
   export default ( state = INITIAL_STATE, action ) => {
@@ -83,7 +85,8 @@ import {
       case GET_SERVER:
         return {
           ...state,
-          gettingNewSession: true
+          gettingNewSession: true,
+          serverConnectionError: false
         }
       case JUMP_STATUS:
         return {
@@ -106,14 +109,24 @@ import {
           ...state, 
           nvrSearchResults: action.payload,
           nvrSearchReturnedEmpty: action.payload.length < 1 ? true : false,
-          loginLoading: false
+          loginLoading: false,
+          serverConnectionError: false
         }
       case SET_NVR_SELECTED: {
         return { 
           ...state,
           nvrSelected: action.payload,
           nvrSelectedIp: action.selectedServerIp,
-          nvrSearchText: action.payload.sName
+          nvrSearchText: action.payload.sName,
+          serverConnectionError: false
+        }
+      }
+      case SERVER_CONNECTION_ERROR: {
+        return { 
+          ...state,
+          serverConnectionError: true,
+          nvrSearchText: action.payload,
+          nvrSelected: {sName: action.payload},
         }
       }
       case CLEAR_LOGIN_RESULT: {
@@ -135,7 +148,8 @@ import {
           isLoggedIn: false,
           nvrSelected: {},
           nvrSelectedIp: '',
-          nvrSearchReturnedEmpty: false
+          nvrSearchReturnedEmpty: false,
+          serverConnectionError: false
         }
       case LOGIN_USER_START:
         return { 
@@ -172,7 +186,8 @@ import {
           sSess: '',
           isLoggedIn: false,
           jumpLoading: false,
-          jumpStatus: ''
+          jumpStatus: '',
+          serverConnectionError: false
         }
       case CLEAR_SESSION_MODAL:
         return { 
